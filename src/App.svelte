@@ -3,30 +3,19 @@
   import { onMount } from "svelte";
   import Header from "./components/Header.svelte";
   import Circle from "./components/Circle.svelte";
-
-  let synth;
-  let voices = [];
-  let selectedVoice;
-
-  onMount(() => {
-    synth = speechSynthesis;
-    const getVoices = () => {
-      voices = synth.getVoices();
-      selectedVoice = voices[0];
-    };
-    if (synth.onvoiceschanged !== undefined) {
-      synth.onvoiceschanged = getVoices;
-    }
-  });
-  $: selectedVoice = voices[0];
 </script>
 
 <style>
-
+  main {
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+  }
 </style>
 
 <Tailwindcss />
-<main>
+
+<main style="background-image: url(./images/ice.jpg)">
   <Header />
-  <Circle {selectedVoice} />
+  <Circle />
 </main>
