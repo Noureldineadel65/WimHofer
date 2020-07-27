@@ -9,6 +9,13 @@
   let breathingInterval;
   let rhombuses;
   const time = 3500;
+  let audio;
+  const messages = [
+    "BRING AWARENESS TO YOUR BREATH",
+    "BREATHE IN",
+    "BREATHE OUT"
+  ];
+  let breatheState = "";
   onMount(() => {
     [...rhombuses.children].forEach((d, i) => {
       d.classList.add("inner-scaled");
@@ -17,6 +24,7 @@
   });
   function startBreathing() {
     if (breathingInterval) return;
+    audio.play();
     displayBreath = true;
     [...rhombuses.children].forEach((d, i) => {
       d.style.transform = `translate(-50%, -50%) scale(1.2)`;
@@ -26,10 +34,12 @@
         breathCount++;
         [...rhombuses.children].forEach((d, i) => {
           d.style.transform = `translate(-50%, -50%) scale(0.8)`;
+          breatheState = "BREATHE OUT";
         });
       } else {
         [...rhombuses.children].forEach((d, i) => {
           d.style.transform = `translate(-50%, -50%) scale(1.2)`;
+          breatheState = "BREATHE IN";
         });
       }
       scaled = !scaled;
@@ -48,7 +58,7 @@
     height: 45rem;
     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
     margin: 0 auto;
-    margin-top: 8rem;
+    margin-top: 5rem;
     transform: scale(1) rotate(45deg);
     overflow: hidden;
   }
@@ -82,7 +92,7 @@
     height: 25rem;
   }
   .scaled {
-    transform: scale(0.6) rotate(0deg);
+    transform: scale(0.7) rotate(0deg);
   }
   .inner-scaled {
     transform: translate(-50%, -50%) scale(0.5);
@@ -100,23 +110,22 @@
       3px 3px 0 #222, 4px 4px 0 #fff, 5px 5px 0 #fff, 6px 6px 0 #fff,
       7px 7px 0 #fff;
   }
-  .out {
+  .breathe-state {
     text-align: center;
-    font-size: 8rem;
-    position: absolute;
+    font-size: 2rem;
+    font-weight: bolder;
     display: block;
+
+    margin-top: 0rem;
+  }
+  .play-icon {
+    position: absolute;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
-    margin-top: 4rem;
-    text-shadow: -3px -3px 0 #222, 3px -3px 0 #222, -3px 3px 0 #222,
-      3px 3px 0 #222, 4px 4px 0 #fff, 5px 5px 0 #fff, 6px 6px 0 #fff,
-      7px 7px 0 #fff;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    width: 4rem;
   }
 </style>
-
-{#if scaled}
-  <div class="out" transition:scale>OUT</div>
-{/if}
 
 <div
   class="rhombus relative"
@@ -129,9 +138,15 @@
   <div class="inner-rhombus absolute inner-rhombus-2" />
   <div class="inner-rhombus absolute inner-rhombus-3" />
   <div class="inner-rhombus absolute inner-rhombus-4">
-    {#if !scaled && displayBreath}
-      <div class="in" transition:scale>IN</div>
+    {#if !displayBreath && !scaled}
+      <img src="./images/play.svg" class="play-icon" transition:scale />
     {/if}
   </div>
 
 </div>
+{#if displayBreath}
+  <div class="breathe-state">
+    {breathCount === 0 && !breatheState ? messages[0] : breatheState}
+  </div>
+{/if}
+<audio src="./meditation.mp3" id="audio" bind:this={audio} />
