@@ -1,29 +1,47 @@
 <script>
-  import { onMount, createEventDispatcher } from "svelte";
+  import { onMount, createEventDispatcher, onDestroy } from "svelte";
   import { scale } from "svelte/transition";
   const dispatch = createEventDispatcher();
   let scaled = false;
   let displayBreath = false;
   let breathCount = 0;
   let round = 1;
-  onMount(() => {});
+  let breathingInterval;
+  let rhombuses;
+  const time = 3500;
+  onMount(() => {
+    [...rhombuses.children].forEach((d, i) => {
+      d.classList.add("inner-scaled");
+      d.style.transition = `transform ${time / 1500}s 0.${i * 2}s`;
+    });
+  });
   function startBreathing() {
+    if (breathingInterval) return;
     displayBreath = true;
-    setInterval(() => {
+    [...rhombuses.children].forEach((d, i) => {
+      d.style.transform = `translate(-50%, -50%) scale(1.2)`;
+    });
+    breathingInterval = setInterval(() => {
+      if (!scaled) {
+        breathCount++;
+        [...rhombuses.children].forEach((d, i) => {
+          d.style.transform = `translate(-50%, -50%) scale(0.8)`;
+        });
+      } else {
+        [...rhombuses.children].forEach((d, i) => {
+          d.style.transform = `translate(-50%, -50%) scale(1.2)`;
+        });
+      }
       scaled = !scaled;
-      breathCount++;
-    }, 2500);
+    }, time);
   }
+  onDestroy(() => {
+    clearInterval(breathingInterval);
+  });
+  $: console.log(breathCount);
 </script>
 
 <style>
-  [data-pallet="1"] {
-    --color-1: #f1faee;
-    --color-2: #e63946;
-    --color-3: #a8dadc;
-    --color-4: #457b9d;
-    --color-5: #1d3557;
-  }
   .rhombus {
     background-color: var(--color-1);
     width: 45rem;
@@ -31,8 +49,8 @@
     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
     margin: 0 auto;
     margin-top: 8rem;
-    transition: transform 1s;
     transform: scale(1) rotate(45deg);
+    overflow: hidden;
   }
   .inner-rhombus {
     top: 50%;
@@ -60,12 +78,14 @@
   }
   .inner-rhombus-4 {
     background-color: var(--color-5);
-
     width: 25rem;
     height: 25rem;
   }
   .scaled {
-    transform: scale(0.3) rotate(0deg);
+    transform: scale(0.6) rotate(0deg);
+  }
+  .inner-scaled {
+    transform: translate(-50%, -50%) scale(0.5);
   }
   .in {
     color: #fff;
@@ -102,7 +122,9 @@
   class="rhombus relative"
   class:scaled
   data-pallet="1"
-  on:click={startBreathing}>
+  on:click={startBreathing}
+  bind:this={rhombuses}
+  style="transition: transform {time / 1500}s">
   <div class="inner-rhombus absolute inner-rhombus-1" />
   <div class="inner-rhombus absolute inner-rhombus-2" />
   <div class="inner-rhombus absolute inner-rhombus-3" />
