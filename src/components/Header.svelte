@@ -15,8 +15,10 @@
   }
 </style>
 
-<header class="relative">
-  <h1 class="text-white">WimHofer</h1>
+<header class="relative bg-white">
+  <h1 class="text-gray-500 shadow-lg border-gray border-b-4 border-t-4">
+    WimHofer
+  </h1>
   <div class="setting-icon absolute w-20">
     <img
       src="./images/setting.svg"

@@ -10,6 +10,10 @@
   let rhombuses;
   const time = 3500;
   let audio;
+  let start = false;
+  let tone;
+  const countDownTime = 3;
+  let countDown = 0;
   const messages = [
     "BRING AWARENESS TO YOUR BREATH",
     "BREATHE IN",
@@ -19,7 +23,7 @@
   onMount(() => {
     [...rhombuses.children].forEach((d, i) => {
       d.classList.add("inner-scaled");
-      d.style.transition = `transform ${time / 1500}s 0.${i * 2}s`;
+      d.style.transition = `transform ${time / 1000}s 0.${i * 2}s`;
     });
   });
   function startBreathing() {
@@ -27,23 +31,35 @@
     audio.play();
     displayBreath = true;
     [...rhombuses.children].forEach((d, i) => {
-      d.style.transform = `translate(-50%, -50%) scale(1.2)`;
+      d.style.transform = `translate(-50%, -50%) scale(1.3)`;
     });
     breathingInterval = setInterval(() => {
+      breathCount++;
       if (!scaled) {
-        breathCount++;
         [...rhombuses.children].forEach((d, i) => {
           d.style.transform = `translate(-50%, -50%) scale(0.8)`;
           breatheState = "BREATHE OUT";
         });
       } else {
         [...rhombuses.children].forEach((d, i) => {
-          d.style.transform = `translate(-50%, -50%) scale(1.2)`;
+          d.style.transform = `translate(-50%, -50%) scale(1.3)`;
           breatheState = "BREATHE IN";
         });
       }
       scaled = !scaled;
     }, time);
+  }
+  function play() {
+    start = true;
+    tone.play();
+    const ready = setInterval(() => {
+      countDown++;
+      if (countDown === countDownTime) {
+        clearInterval(ready);
+        tone.pause();
+        startBreathing();
+      }
+    }, 1000);
   }
   onDestroy(() => {
     clearInterval(breathingInterval);
@@ -58,7 +74,7 @@
     height: 45rem;
     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
     margin: 0 auto;
-    margin-top: 5rem;
+    /* margin-top: 5rem; */
     transform: scale(1) rotate(45deg);
     overflow: hidden;
   }
@@ -94,22 +110,6 @@
   .scaled {
     transform: scale(0.7) rotate(0deg);
   }
-  .inner-scaled {
-    transform: translate(-50%, -50%) scale(0.5);
-  }
-  .in {
-    color: #fff;
-    font-size: 6rem;
-    position: absolute;
-    letter-spacing: 10px;
-    /* margin-left: 10px; */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-45deg);
-    text-shadow: -3px -3px 0 #222, 3px -3px 0 #222, -3px 3px 0 #222,
-      3px 3px 0 #222, 4px 4px 0 #fff, 5px 5px 0 #fff, 6px 6px 0 #fff,
-      7px 7px 0 #fff;
-  }
   .breathe-state {
     text-align: center;
     font-size: 2rem;
@@ -125,21 +125,33 @@
     transform: translate(-50%, -50%) rotate(-45deg);
     width: 4rem;
   }
+  .countDown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 6rem;
+  }
 </style>
 
 <div
   class="rhombus relative"
   class:scaled
   data-pallet="1"
-  on:click={startBreathing}
+  on:click={play}
   bind:this={rhombuses}
   style="transition: transform {time / 1500}s">
   <div class="inner-rhombus absolute inner-rhombus-1" />
   <div class="inner-rhombus absolute inner-rhombus-2" />
   <div class="inner-rhombus absolute inner-rhombus-3" />
   <div class="inner-rhombus absolute inner-rhombus-4">
-    {#if !displayBreath && !scaled}
-      <img src="./images/play.svg" class="play-icon" transition:scale />
+    {#if !displayBreath && !scaled && !start}
+      <img
+        src="./images/play.svg"
+        class="play-icon cursor-pointer"
+        transition:scale />
+    {:else if start && !displayBreath}
+      <div class="countDown font-bolder">{countDown + 1}</div>
     {/if}
   </div>
 
@@ -149,4 +161,10 @@
     {breathCount === 0 && !breatheState ? messages[0] : breatheState}
   </div>
 {/if}
-<audio src="./meditation.mp3" id="audio" bind:this={audio} />
+<audio
+  src="./meditation.mp3"
+  id="audio"
+  bind:this={audio}
+  loop
+  preload="auto" />
+<audio src="./tone.mp3" id="tone" bind:this={tone} loop preload="auto" />
