@@ -25,16 +25,19 @@
       d.classList.add("inner-scaled");
       d.style.transition = `transform ${time / 1000}s 0.${i * 2}s`;
     });
+    // audio.oncanplaythrough = function() {
+    //   alert("wtf");
+    // };
   });
   function startBreathing() {
     if (breathingInterval) return;
+
     audio.play();
     displayBreath = true;
     [...rhombuses.children].forEach((d, i) => {
       d.style.transform = `translate(-50%, -50%) scale(1.3)`;
     });
     breathingInterval = setInterval(() => {
-      breathCount++;
       if (!scaled) {
         [...rhombuses.children].forEach((d, i) => {
           d.style.transform = `translate(-50%, -50%) scale(0.8)`;
@@ -45,6 +48,7 @@
           d.style.transform = `translate(-50%, -50%) scale(1.3)`;
           breatheState = "BREATHE IN";
         });
+        breathCount++;
       }
       scaled = !scaled;
     }, time);
@@ -76,6 +80,7 @@
     margin: 0 auto;
     /* margin-top: 5rem; */
     transform: scale(1) rotate(45deg);
+
     overflow: hidden;
   }
   .inner-rhombus {
@@ -83,6 +88,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    border-radius: 50%;
   }
   .inner-rhombus-1 {
     background-color: var(--color-2);
@@ -109,14 +115,16 @@
   }
   .scaled {
     transform: scale(0.7) rotate(0deg);
+    border-radius: 50%;
   }
   .breathe-state {
     text-align: center;
     font-size: 2rem;
     font-weight: bolder;
     display: block;
-
-    margin-top: 0rem;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: -4rem;
   }
   .play-icon {
     position: absolute;
@@ -132,15 +140,32 @@
     transform: translate(-50%, -50%) rotate(-45deg);
     font-size: 6rem;
   }
+  .breatheCount {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 6rem;
+  }
+  .round {
+    font-size: 2rem;
+    position: absolute;
+    transform: translateX(-50%);
+
+    left: 50%;
+  }
 </style>
 
+{#if start}
+  <div class="round text-center" transition:scale>ROUND {round}</div>
+{/if}
 <div
   class="rhombus relative"
   class:scaled
   data-pallet="1"
   on:click={play}
   bind:this={rhombuses}
-  style="transition: transform {time / 1500}s">
+  style="transition: all {time / 1500}s">
   <div class="inner-rhombus absolute inner-rhombus-1" />
   <div class="inner-rhombus absolute inner-rhombus-2" />
   <div class="inner-rhombus absolute inner-rhombus-3" />
@@ -151,13 +176,15 @@
         class="play-icon cursor-pointer"
         transition:scale />
     {:else if start && !displayBreath}
-      <div class="countDown font-bolder">{countDown + 1}</div>
+      <div class="countDown font-bolder" transition:scale>{countDown + 1}</div>
+    {:else if displayBreath && !scaled}
+      <div class="breatheCount" transition:scale>{breathCount}</div>
     {/if}
   </div>
 
 </div>
 {#if displayBreath}
-  <div class="breathe-state">
+  <div class="breathe-state absolute" transition:scale>
     {breathCount === 0 && !breatheState ? messages[0] : breatheState}
   </div>
 {/if}

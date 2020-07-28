@@ -12,14 +12,29 @@
     background-position: center;
     height: 100vh;
   }
+
+  .backgrounds::after {
+    content: "";
+    background: rgba(34, 34, 34, 0.534);
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+  }
+  /* .backgrounds img {
+    object-fit: cover;
+  } */
 </style>
 
 <Tailwindcss />
 
 <main
-  style="background-image: url(./images/ice.jpg)"
-  class="flex flex-col justify-between align-center overflow-hidden">
+  class="flex flex-col justify-between align-center overflow-hidden relative">
+  <div class="backgrounds absolute w-full h-full">
+    <img src="./images/beach.jpg" class="absolute object-cover w-full h-full" />
+  </div>
   <Header />
-  <Circle />
+  <div class="circle-container relative">
+    <Circle />
+  </div>
   <CreatedBy />
 </main>
