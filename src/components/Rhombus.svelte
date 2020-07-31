@@ -2,73 +2,36 @@
   import { onMount, createEventDispatcher, onDestroy } from "svelte";
   import { scale } from "svelte/transition";
   const dispatch = createEventDispatcher();
-  let scaled = false;
-  let displayBreath = false;
-  let breathCount = 0;
-  let round = 1;
-  let breathingInterval;
+  export let time = 0;
+  export let displayBreath = false;
+  export let scaled = false;
+  export let start = false;
+  export let countDown = 0;
+  export let breathCount = 0;
   let rhombuses;
-  const time = 3500;
-  let audio;
-  let start = false;
-  let tone;
-  const countDownTime = 3;
-  let countDown = 0;
-  const messages = [
-    "BRING AWARENESS TO YOUR BREATH",
-    "BREATHE IN",
-    "BREATHE OUT"
-  ];
-  let breatheState = "";
   onMount(() => {
     [...rhombuses.children].forEach((d, i) => {
       d.classList.add("inner-scaled");
       d.style.transition = `transform ${time / 1000}s 0.${i * 2}s`;
     });
-    // audio.oncanplaythrough = function() {
-    //   alert("wtf");
-    // };
   });
-  function startBreathing() {
-    if (breathingInterval) return;
 
-    audio.play();
-    displayBreath = true;
+  function scaleRhombus() {
     [...rhombuses.children].forEach((d, i) => {
       d.style.transform = `translate(-50%, -50%) scale(1.3)`;
     });
-    breathingInterval = setInterval(() => {
-      if (!scaled) {
-        [...rhombuses.children].forEach((d, i) => {
-          d.style.transform = `translate(-50%, -50%) scale(0.8)`;
-          breatheState = "BREATHE OUT";
-        });
-      } else {
-        [...rhombuses.children].forEach((d, i) => {
-          d.style.transform = `translate(-50%, -50%) scale(1.3)`;
-          breatheState = "BREATHE IN";
-        });
-        breathCount++;
-      }
-      scaled = !scaled;
-    }, time);
   }
-  function play() {
-    start = true;
-    tone.play();
-    const ready = setInterval(() => {
-      countDown++;
-      if (countDown === countDownTime) {
-        clearInterval(ready);
-        tone.pause();
-        startBreathing();
-      }
-    }, 1000);
+
+  function unScaleRhombus() {
+    [...rhombuses.children].forEach((d, i) => {
+      d.style.transform = `translate(-50%, -50%) scale(0.8)`;
+    });
   }
-  onDestroy(() => {
-    clearInterval(breathingInterval);
-  });
-  $: console.log(breathCount);
+  $: if (scaled) {
+    unScaleRhombus();
+  } else if (!scaled && displayBreath) {
+    scaleRhombus();
+  }
 </script>
 
 <style>
@@ -78,7 +41,6 @@
     height: 45rem;
     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
     margin: 0 auto;
-    /* margin-top: 5rem; */
     transform: scale(1) rotate(45deg);
 
     overflow: hidden;
@@ -117,15 +79,6 @@
     transform: scale(0.7) rotate(0deg);
     border-radius: 50%;
   }
-  .breathe-state {
-    text-align: center;
-    font-size: 2rem;
-    font-weight: bolder;
-    display: block;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-top: -4rem;
-  }
   .play-icon {
     position: absolute;
     top: 50%;
@@ -147,23 +100,13 @@
     transform: translate(-50%, -50%) rotate(-45deg);
     font-size: 6rem;
   }
-  .round {
-    font-size: 2rem;
-    position: absolute;
-    transform: translateX(-50%);
-
-    left: 50%;
-  }
 </style>
 
-{#if start}
-  <div class="round text-center" transition:scale>ROUND {round}</div>
-{/if}
 <div
   class="rhombus relative"
   class:scaled
   data-pallet="1"
-  on:click={play}
+  on:click={() => dispatch('play')}
   bind:this={rhombuses}
   style="transition: all {time / 1500}s">
   <div class="inner-rhombus absolute inner-rhombus-1" />
@@ -174,7 +117,8 @@
       <img
         src="./images/play.svg"
         class="play-icon cursor-pointer"
-        transition:scale />
+        transition:scale
+        alt="..." />
     {:else if start && !displayBreath}
       <div class="countDown font-bolder" transition:scale>{countDown + 1}</div>
     {:else if displayBreath && !scaled}
@@ -183,15 +127,3 @@
   </div>
 
 </div>
-{#if displayBreath}
-  <div class="breathe-state absolute" transition:scale>
-    {breathCount === 0 && !breatheState ? messages[0] : breatheState}
-  </div>
-{/if}
-<audio
-  src="./meditation.mp3"
-  id="audio"
-  bind:this={audio}
-  loop
-  preload="auto" />
-<audio src="./tone.mp3" id="tone" bind:this={tone} loop preload="auto" />

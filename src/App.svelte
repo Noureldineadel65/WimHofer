@@ -2,7 +2,7 @@
   import Tailwindcss from "./Tailwindcss.svelte";
   import { onMount } from "svelte";
   import Header from "./components/Header.svelte";
-  import Circle from "./components/Circle.svelte";
+  import Meditation from "./components/Meditation.svelte";
   import CreatedBy from "./components/CreatedBy.svelte";
 </script>
 
@@ -33,8 +33,8 @@
     <img src="./images/beach.jpg" class="absolute object-cover w-full h-full" />
   </div>
   <Header />
-  <div class="circle-container relative">
-    <Circle />
+  <div class="meditation-container relative">
+    <Meditation />
   </div>
   <CreatedBy />
 </main>
