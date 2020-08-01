@@ -1,6 +1,7 @@
 <script>
   import { onMount, createEventDispatcher, onDestroy } from "svelte";
   import Rhombus from "./Rhombus.svelte";
+  import Circle from "./Circle.svelte";
   import { scale } from "svelte/transition";
   const dispatch = createEventDispatcher();
   let scaled = false;
@@ -14,7 +15,7 @@
   let start = false;
   let tone;
   const countDownTime = 3;
-  let holdState = true;
+  let holdState = false;
   let countDown = 0;
   const messages = [
     "BRING AWARENESS TO YOUR BREATH",
@@ -38,12 +39,17 @@
       } else {
         breatheState = "BREATHE IN";
         breathCount++;
-        // if (breathCount === 3) {
-        //   clearInterval(breathingInterval);
-        // }
+        if (breathCount === 3) {
+          clearInterval(breathingInterval);
+          finishBreathing();
+        }
       }
       scaled = !scaled;
     }, time);
+  }
+  function finishBreathing() {
+    holdState = true;
+    stopAudio(audio);
   }
   function play() {
     start = true;
@@ -52,10 +58,14 @@
       countDown++;
       if (countDown === countDownTime) {
         clearInterval(ready);
-        tone.pause();
+        stopAudio(tone);
         startBreathing();
       }
     }, 1000);
+  }
+  function stopAudio(sound) {
+    sound.pause();
+    sound.currentTime = 0;
   }
   onDestroy(() => {
     clearInterval(breathingInterval);
@@ -85,16 +95,26 @@
 {#if start}
   <div class="round text-center" transition:scale>ROUND {round}</div>
 {/if}
-<div class="rhombus-container">
-  <Rhombus
-    {time}
-    {displayBreath}
-    {scaled}
-    {start}
-    {countDown}
-    {breathCount}
-    on:play={play} />
-</div>
+{#if holdState}
+  <div class="circle-container" transition:scale>
+    <Circle
+      on:holdEnd={() => {
+        holdState = false;
+      }} />
+  </div>
+{:else}
+  <div class="rhombus-container" transition:scale>
+    <Rhombus
+      {time}
+      {displayBreath}
+      {scaled}
+      {start}
+      {countDown}
+      {breathCount}
+      on:play={play} />
+  </div>
+{/if}
+
 {#if displayBreath}
   <div class="breathe-state absolute" transition:scale>
     {breathCount === 0 && !breatheState ? messages[0] : breatheState}

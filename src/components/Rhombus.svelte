@@ -36,9 +36,10 @@
 
 <style>
   .rhombus {
+    --size: 45rem;
     background-color: var(--color-1);
-    width: 45rem;
-    height: 45rem;
+    width: var(--size);
+    height: var(--size);
     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
     margin: 0 auto;
     transform: scale(1) rotate(45deg);
@@ -55,25 +56,25 @@
   .inner-rhombus-1 {
     background-color: var(--color-2);
 
-    width: 40rem;
-    height: 40rem;
+    width: calc(var(--size) - 5rem);
+    height: calc(var(--size) - 5rem);
   }
   .inner-rhombus-2 {
     background-color: var(--color-3);
 
-    width: 35rem;
-    height: 35rem;
+    width: calc(var(--size) - 10rem);
+    height: calc(var(--size) - 10rem);
   }
   .inner-rhombus-3 {
     background-color: var(--color-4);
 
-    width: 30rem;
-    height: 30rem;
+    width: calc(var(--size) - 15rem);
+    height: calc(var(--size) - 15rem);
   }
   .inner-rhombus-4 {
     background-color: var(--color-5);
-    width: 25rem;
-    height: 25rem;
+    width: calc(var(--size) - 20rem);
+    height: calc(var(--size) - 20rem);
   }
   .scaled {
     transform: scale(0.7) rotate(0deg);
