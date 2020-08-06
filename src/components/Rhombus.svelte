@@ -14,6 +14,7 @@
       d.classList.add("inner-scaled");
       d.style.transition = `transform ${time / 1000}s 0.${i * 2}s`;
     });
+    console.log([...rhombuses.children]);
   });
 
   function scaleRhombus() {

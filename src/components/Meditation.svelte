@@ -33,13 +33,14 @@
 
     audio.play();
     displayBreath = true;
+    breatheState = "BRING AWARENESS TO YOUR BREATH";
     breathingInterval = setInterval(() => {
       if (!scaled) {
         breatheState = "BREATHE OUT";
       } else {
         breatheState = "BREATHE IN";
         breathCount++;
-        if (breathCount === 3) {
+        if (breathCount === 1) {
           clearInterval(breathingInterval);
           finishBreathing();
         }
@@ -48,6 +49,9 @@
     }, time);
   }
   function finishBreathing() {
+    displayBreath = false;
+    start = false;
+    breatheState = "HOLD YOUR BREATH";
     holdState = true;
     stopAudio(audio);
   }
@@ -67,6 +71,16 @@
     sound.pause();
     sound.currentTime = 0;
   }
+  function holdEnd() {
+    let scaled = false;
+    let displayBreath = false;
+    let breathingInterval;
+
+    startBreathing();
+    start = false;
+    holdState = false;
+    round++;
+  }
   onDestroy(() => {
     clearInterval(breathingInterval);
   });
@@ -80,45 +94,54 @@
     display: block;
     left: 50%;
     transform: translateX(-50%);
-    margin-top: -4rem;
+    /* margin-top: -4rem; */
+    bottom: -23rem;
   }
 
   .round {
     font-size: 2rem;
     position: absolute;
     transform: translateX(-50%);
+    top: -23rem;
 
     left: 50%;
+  }
+  .shape-container {
+    width: 100%;
+    height: 100%;
+  }
+  .rhombus-container,
+  .circle-container {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 </style>
 
 {#if start}
   <div class="round text-center" transition:scale>ROUND {round}</div>
 {/if}
-{#if holdState}
-  <div class="circle-container" transition:scale>
-    <Circle
-      on:holdEnd={() => {
-        holdState = false;
-      }} />
-  </div>
-{:else}
-  <div class="rhombus-container" transition:scale>
-    <Rhombus
-      {time}
-      {displayBreath}
-      {scaled}
-      {start}
-      {countDown}
-      {breathCount}
-      on:play={play} />
-  </div>
-{/if}
+<div class="shape-container">
+  {#if holdState}
+    <div class="circle-container absolute" transition:scale>
+      <Circle on:holdEnd={holdEnd} />
+    </div>
+  {:else}
+    <div class="rhombus-container absolute" transition:scale>
+      <Rhombus
+        {time}
+        {displayBreath}
+        {scaled}
+        {start}
+        {countDown}
+        {breathCount}
+        on:play={play} />
+    </div>
+  {/if}
+</div>
 
 {#if displayBreath}
-  <div class="breathe-state absolute" transition:scale>
-    {breathCount === 0 && !breatheState ? messages[0] : breatheState}
-  </div>
+  <div class="breathe-state absolute" transition:scale>{breatheState}</div>
 {/if}
 <audio
   src="./meditation.mp3"
