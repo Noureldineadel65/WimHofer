@@ -9,14 +9,15 @@
   let breathCount = 0;
   let round = 1;
   let breathingInterval;
-
-  const time = 3500;
+  const time = 5000;
   let audio;
   let start = false;
   let tone;
   const countDownTime = 3;
   let holdState = false;
   let countDown = 0;
+  let fullyState = false;
+  let fullyTimer = "";
   const messages = [
     "BRING AWARENESS TO YOUR BREATH",
     "BREATHE IN",
@@ -43,6 +44,7 @@
         if (breathCount === 1) {
           clearInterval(breathingInterval);
           breathingInterval = null;
+          breathCount = 0;
           finishBreathing();
         }
       }
@@ -55,6 +57,26 @@
     breatheState = "HOLD YOUR BREATH";
     holdState = true;
     stopAudio(audio);
+  }
+  function fullyIn() {
+    breatheState = "FULLY IN!";
+    displayBreath = true;
+    scaled = false;
+    let count = 5;
+    fullyState = true;
+    fullyTimer = `00:${count < 10 ? `0${count}` : `${count}`}`;
+    console.log(fullyTimer);
+    let full = setInterval(() => {
+      count--;
+      fullyTimer = `00:${count < 10 ? `0${count}` : `${count}`}`;
+
+      if (count === 0) {
+        startBreathing();
+        fullyTimer = "";
+        fullyState = false;
+        clearInterval(full);
+      }
+    }, 1000);
   }
   function play() {
     start = true;
@@ -77,10 +99,12 @@
     displayBreath = false;
     // breathingInterval;
 
-    startBreathing();
     start = false;
     holdState = false;
-    round++;
+    setTimeout(() => {
+      fullyIn();
+    }, 0);
+    // round++;
   }
   onDestroy(() => {
     clearInterval(breathingInterval);
@@ -136,6 +160,8 @@
         {start}
         {countDown}
         {breathCount}
+        {fullyState}
+        {fullyTimer}
         on:play={play} />
     </div>
   {/if}
@@ -149,5 +175,6 @@
   id="audio"
   bind:this={audio}
   loop
-  preload="auto" />
-<audio src="./tone.mp3" id="tone" bind:this={tone} loop preload="auto" />
+  preload="auto"
+  muted />
+<audio src="./tone.mp3" id="tone" bind:this={tone} loop preload="auto" muted />

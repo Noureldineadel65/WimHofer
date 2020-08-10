@@ -8,6 +8,8 @@
   export let start = false;
   export let countDown = 0;
   export let breathCount = 0;
+  export let fullyState = false;
+  export let fullyTimer = "";
   let rhombuses;
   let rhombusChildren;
   onMount(() => {
@@ -19,20 +21,14 @@
   });
 
   function scaleRhombus() {
-    console.log(rhombuses);
-    setTimeout(() => {
-      [...rhombuses.children].forEach((d, i) => {
-        d.style.transform = `translate(-50%, -50%) scale(1.3)`;
-      });
-    }, 0);
+    [...rhombuses.children].forEach((d, i) => {
+      d.style.transform = `translate(-50%, -50%) scale(1.3)`;
+    });
   }
 
   function unScaleRhombus() {
-    console.log(rhombuses);
-    setTimeout(() => {
-      [...rhombuses.children].forEach((d, i) => {
-        d.style.transform = `translate(-50%, -50%) scale(0.8)`;
-      });
+    [...rhombuses.children].forEach((d, i) => {
+      d.style.transform = `translate(-50%, -50%) scale(0.8)`;
     }, 0);
   }
   $: if (scaled) {
@@ -131,7 +127,9 @@
     {:else if start && !displayBreath}
       <div class="countDown font-bolder" transition:scale>{countDown + 1}</div>
     {:else if displayBreath && !scaled}
-      <div class="breatheCount" transition:scale>{breathCount}</div>
+      <div class="breatheCount" transition:scale>
+        {fullyState ? fullyTimer : breathCount}
+      </div>
     {/if}
   </div>
 
