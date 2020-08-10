@@ -9,6 +9,7 @@
   export let countDown = 0;
   export let breathCount = 0;
   let rhombuses;
+  let rhombusChildren;
   onMount(() => {
     [...rhombuses.children].forEach((d, i) => {
       d.classList.add("inner-scaled");
@@ -18,15 +19,21 @@
   });
 
   function scaleRhombus() {
-    [...rhombuses.children].forEach((d, i) => {
-      d.style.transform = `translate(-50%, -50%) scale(1.3)`;
-    });
+    console.log(rhombuses);
+    setTimeout(() => {
+      [...rhombuses.children].forEach((d, i) => {
+        d.style.transform = `translate(-50%, -50%) scale(1.3)`;
+      });
+    }, 0);
   }
 
   function unScaleRhombus() {
-    [...rhombuses.children].forEach((d, i) => {
-      d.style.transform = `translate(-50%, -50%) scale(0.8)`;
-    });
+    console.log(rhombuses);
+    setTimeout(() => {
+      [...rhombuses.children].forEach((d, i) => {
+        d.style.transform = `translate(-50%, -50%) scale(0.8)`;
+      });
+    }, 0);
   }
   $: if (scaled) {
     unScaleRhombus();

@@ -42,6 +42,7 @@
         breathCount++;
         if (breathCount === 1) {
           clearInterval(breathingInterval);
+          breathingInterval = null;
           finishBreathing();
         }
       }
@@ -72,9 +73,9 @@
     sound.currentTime = 0;
   }
   function holdEnd() {
-    let scaled = false;
-    let displayBreath = false;
-    let breathingInterval;
+    scaled = false;
+    displayBreath = false;
+    // breathingInterval;
 
     startBreathing();
     start = false;
