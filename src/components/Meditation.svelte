@@ -2,7 +2,7 @@
   import { onMount, createEventDispatcher, onDestroy } from "svelte";
   import Rhombus from "./Rhombus.svelte";
   import Circle from "./Circle.svelte";
-  import { scale } from "svelte/transition";
+  import { scale, fly } from "svelte/transition";
   const dispatch = createEventDispatcher();
   let scaled = false;
   let displayBreath = false;
@@ -17,6 +17,7 @@
   let holdState = false;
   let countDown = 0;
   let fullyState = false;
+  let roundEnd = false;
   let fullyTimer = "";
   const messages = [
     "BRING AWARENESS TO YOUR BREATH",
@@ -41,7 +42,7 @@
       } else {
         breatheState = "BREATHE IN";
         breathCount++;
-        if (breathCount === 1) {
+        if (breathCount === 2) {
           clearInterval(breathingInterval);
           breathingInterval = null;
           breathCount = 0;
@@ -58,6 +59,18 @@
     holdState = true;
     stopAudio(audio);
   }
+  function endRound() {
+    scaled = false;
+    displayBreath = false;
+    roundEnd = true;
+    setTimeout(() => {
+      roundEnd = false;
+
+      setTimeout(() => {
+        startBreathing();
+      });
+    }, 5000);
+  }
   function fullyIn() {
     breatheState = "FULLY IN!";
     displayBreath = true;
@@ -65,15 +78,15 @@
     let count = 5;
     fullyState = true;
     fullyTimer = `00:${count < 10 ? `0${count}` : `${count}`}`;
-    console.log(fullyTimer);
     let full = setInterval(() => {
       count--;
       fullyTimer = `00:${count < 10 ? `0${count}` : `${count}`}`;
 
       if (count === 0) {
-        startBreathing();
-        fullyTimer = "";
         fullyState = false;
+        fullyTimer = "";
+
+        endRound();
         clearInterval(full);
       }
     }, 1000);
@@ -99,7 +112,6 @@
     displayBreath = false;
     // breathingInterval;
 
-    start = false;
     holdState = false;
     setTimeout(() => {
       fullyIn();
@@ -136,20 +148,63 @@
     height: 100%;
   }
   .rhombus-container,
-  .circle-container {
+  .circle-container,
+  .roundEnd {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+  }
+  .roundEnd {
+    font-size: 4rem;
+    border: 5px solid var(--color-1);
+    color: #fff;
+    z-index: 4;
+    padding: 2rem;
+    animation: animateColor 5s;
+    animation-fill-mode: forwards;
+  }
+  .roundEnd span {
+    width: 5rem;
+    height: 5rem;
+    background-color: var(--color-1);
+    bottom: -100%;
+    left: 50%;
+    border-radius: 50%;
+    z-index: -1;
+    transform: translateX(-50%);
+    animation: scaleSpan 5s;
+    animation-fill-mode: forwards;
+  }
+  @keyframes scaleSpan {
+    0% {
+      transform: translateX(-50%) scale(0);
+    }
+    100% {
+      transform: translateX(-50%) scale(20);
+    }
+  }
+  @keyframes animateColor {
+    0% {
+      color: #fff;
+    }
+    100% {
+      color: var(--color-4);
+    }
   }
 </style>
 
 {#if start}
   <div class="round text-center" transition:scale>ROUND {round}</div>
 {/if}
-<div class="shape-container">
+<div class="shape-container" data-pallet="1">
   {#if holdState}
     <div class="circle-container absolute" transition:scale>
       <Circle on:holdEnd={holdEnd} />
+    </div>
+  {:else if roundEnd}
+    <div class="roundEnd absolute overflow-hidden" tansition:fly={{ y: -100 }}>
+      ROUND {round} ENDED
+      <span class="absolute" />
     </div>
   {:else}
     <div class="rhombus-container absolute" transition:scale>

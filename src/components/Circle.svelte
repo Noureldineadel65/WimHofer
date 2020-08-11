@@ -34,7 +34,7 @@
   }
 </style>
 
-<div class="circle relative" data-pallet="1">
+<div class="circle relative">
   <Progress />
   <div class="timer absolute">
     00:{seconds < 10 ? `0${seconds}` : `${seconds}`}

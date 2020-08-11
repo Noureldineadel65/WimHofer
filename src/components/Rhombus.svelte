@@ -110,7 +110,6 @@
 <div
   class="rhombus relative"
   class:scaled
-  data-pallet="1"
   on:click={() => dispatch('play')}
   bind:this={rhombuses}
   style="transition: all {time / 1500}s">
