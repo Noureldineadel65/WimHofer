@@ -20,6 +20,8 @@
   let breathingInterval;
   let audio;
   let tone;
+  let bell;
+  let roundEndBell;
   const messages = [
     "BRING AWARENESS TO YOUR BREATH",
     "BREATHE IN",
@@ -64,13 +66,15 @@
 
     // holdState = true;
     // stopAudio(audio);
-    setTimeout(() => fullyIn(), time);
+    setTimeout(fullyIn, time);
   }
   function reset() {
     scaled = false;
     displayBreath = false;
   }
   function endRound() {
+    roundEndBell.play();
+
     reset();
     roundEnd = true;
     setTimeout(() => {
@@ -86,10 +90,11 @@
   function fullyIn() {
     breatheState = "FULLY IN!";
     displayBreath = true;
+
     scaled = false;
     let count = 15;
     if (middleFull) {
-      count = time / 1000;
+      count = 3;
       fullyState = false;
     } else {
       fullyState = true;
@@ -110,9 +115,11 @@
           setTimeout(() => {
             displayBreath = true;
             start = false;
+            bell.play();
+
             breatheState = "HOLD YOUR BREATH";
             holdState = true;
-            stopAudio(audio);
+            // stopAudio(audio);
           }, time);
         } else {
           scaled = true;
@@ -140,6 +147,8 @@
     sound.currentTime = 0;
   }
   function holdEnd() {
+    bell.play();
+
     reset();
     holdState = false;
     middleFull = false;
@@ -255,10 +264,11 @@
   <div class="breathe-state absolute" transition:scale>{breatheState}</div>
 {/if}
 <audio
-  src="./meditation.mp3"
+  src="https://www.mediafire.com/file/fq4vhq1skffs3u7/Anxiety_Control.mp3"
   id="audio"
   bind:this={audio}
   loop
-  preload="auto"
-  muted />
-<audio src="./tone.mp3" id="tone" bind:this={tone} loop preload="auto" muted />
+  preload="auto" />
+<audio src="./tone.mp3" id="tone" bind:this={tone} loop preload="auto" />
+<audio src="./bell.mp3" id="bell" bind:this={bell} />
+<audio src="./roundEnd.mp3" id="roundEnd-bell" bind:this={roundEndBell} />
