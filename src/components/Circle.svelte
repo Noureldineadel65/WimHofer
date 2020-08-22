@@ -2,7 +2,7 @@
   import Progress from "./Progress.svelte";
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
-  let seconds = 2;
+  let seconds = 30;
   const holdInterval = setInterval(() => {
     seconds--;
     if (seconds == 0) {

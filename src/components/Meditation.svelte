@@ -89,7 +89,7 @@
     scaled = false;
     let count = 15;
     if (middleFull) {
-      count = 5;
+      count = time / 1000;
       fullyState = false;
     } else {
       fullyState = true;
@@ -104,14 +104,20 @@
         fullyState = false;
         fullyTimer = "";
 
+        scaled = true;
+        breatheState = "LET GO";
         if (middleFull) {
-          displayBreath = false;
-          start = false;
-          breatheState = "HOLD YOUR BREATH";
-          holdState = true;
-          stopAudio(audio);
+          setTimeout(() => {
+            displayBreath = true;
+            start = false;
+            breatheState = "HOLD YOUR BREATH";
+            holdState = true;
+            stopAudio(audio);
+          }, time);
         } else {
-          endRound();
+          scaled = true;
+          breatheState = "LET GO";
+          setTimeout(endRound, time);
         }
         clearInterval(full);
       }
