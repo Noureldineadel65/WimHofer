@@ -6,19 +6,20 @@
   const dispatch = createEventDispatcher();
   let scaled = false;
   let displayBreath = false;
-  let breathCount = 0;
-  let round = 1;
-  let breathingInterval;
-  const time = 5000;
-  let audio;
   let start = false;
-  let tone;
-  const countDownTime = 3;
   let holdState = false;
-  let countDown = 0;
   let fullyState = false;
   let roundEnd = false;
+  let breathCount = 0;
+  let countDown = 0;
+  let round = 1;
+  let middleFull = false;
+  const countDownTime = 3;
+  const time = 3000;
   let fullyTimer = "";
+  let breathingInterval;
+  let audio;
+  let tone;
   const messages = [
     "BRING AWARENESS TO YOUR BREATH",
     "BREATHE IN",
@@ -46,6 +47,7 @@
           clearInterval(breathingInterval);
           breathingInterval = null;
           breathCount = 0;
+          middleFull = true;
           finishBreathing();
         }
       }
@@ -53,20 +55,30 @@
     }, time);
   }
   function finishBreathing() {
-    displayBreath = false;
-    start = false;
-    breatheState = "HOLD YOUR BREATH";
-    holdState = true;
-    stopAudio(audio);
+    // displayBreath = false;
+    // start = false;
+    breathCount = "";
+    breatheState = "FULLY IN!";
+
+    // breatheState = "HOLD YOUR BREATH";
+
+    // holdState = true;
+    // stopAudio(audio);
+    setTimeout(() => fullyIn(), time);
   }
-  function endRound() {
+  function reset() {
     scaled = false;
     displayBreath = false;
+  }
+  function endRound() {
+    reset();
     roundEnd = true;
     setTimeout(() => {
       roundEnd = false;
 
       setTimeout(() => {
+        start = true;
+        round++;
         startBreathing();
       });
     }, 5000);
@@ -75,8 +87,14 @@
     breatheState = "FULLY IN!";
     displayBreath = true;
     scaled = false;
-    let count = 5;
-    fullyState = true;
+    let count = 15;
+    if (middleFull) {
+      count = 5;
+      fullyState = false;
+    } else {
+      fullyState = true;
+    }
+
     fullyTimer = `00:${count < 10 ? `0${count}` : `${count}`}`;
     let full = setInterval(() => {
       count--;
@@ -86,7 +104,15 @@
         fullyState = false;
         fullyTimer = "";
 
-        endRound();
+        if (middleFull) {
+          displayBreath = false;
+          start = false;
+          breatheState = "HOLD YOUR BREATH";
+          holdState = true;
+          stopAudio(audio);
+        } else {
+          endRound();
+        }
         clearInterval(full);
       }
     }, 1000);
@@ -108,15 +134,12 @@
     sound.currentTime = 0;
   }
   function holdEnd() {
-    scaled = false;
-    displayBreath = false;
-    // breathingInterval;
-
+    reset();
     holdState = false;
+    middleFull = false;
     setTimeout(() => {
       fullyIn();
     }, 0);
-    // round++;
   }
   onDestroy(() => {
     clearInterval(breathingInterval);
