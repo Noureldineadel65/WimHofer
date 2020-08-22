@@ -83,6 +83,7 @@
       setTimeout(() => {
         start = true;
         round++;
+        dispatch("holdEnd");
         startBreathing();
       });
     }, 5000);
@@ -116,7 +117,7 @@
             displayBreath = true;
             start = false;
             bell.play();
-
+            dispatch("holdStart");
             breatheState = "HOLD YOUR BREATH";
             holdState = true;
             // stopAudio(audio);

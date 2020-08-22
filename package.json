@@ -21,6 +21,7 @@
     "tailwindcss": "^1.5.1"
   },
   "dependencies": {
+    "hover-effect": "^1.1.0",
     "sirv-cli": "^0.4.4"
   }
 }
